@@ -1,2 +1,2 @@
 Manifest-Version: 1.0
-Main-Class: classes/toDoList
+Main-Class: gfHund/toDoList/toDoList

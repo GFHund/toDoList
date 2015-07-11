@@ -1,5 +1,24 @@
 <?xml version="1.0"?>
 
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<xs:element name="toDoList" type="list" />
+
+
+<xs:complexType name="list">
+  <xs:sequence>
+    <xs:element name="toDoEntity" type="entity" maxOccurs="unbounded" />
+  </xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="entity">
+  <xs:sequence>
+    <xs:element name="active" type="xs:boolean" />
+    <xs:element name="name" type="xs:string" />
+    <xs:element name="desc" type="xs:string" />
+    <xs:element name="endDate" type="xs:dateTime" />
+    <xs:element name="criticalDate" type="xs:dateTime" />
+  </xs:sequence>
+  <xs:attribute name="id" type="xs:string" use="required" />
+</xs:complexType>
 
 </xs:schema>
