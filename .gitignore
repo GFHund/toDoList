@@ -1,2 +1,5 @@
 *.class
 *.dblite
+*.jar
+log.txt
+classes/*
