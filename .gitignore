@@ -2,4 +2,4 @@
 *.dblite
 *.jar
 log.txt
-classes/*
+target/*

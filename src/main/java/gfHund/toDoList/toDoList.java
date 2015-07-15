@@ -5,6 +5,7 @@ import javax.xml.transform.*;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.event.*;
 import java.io.*;
 import org.w3c.dom.*;
@@ -187,10 +188,19 @@ public class toDoList extends JFrame implements ActionListener,ItemListener
 		}
 		else if(item == this.mFileOpen)
 		{
-			FileDialog dialog = new FileDialog(this,"open toDo List");
-			dialog.setVisible(true);
-
-			String file = dialog.getDirectory()+dialog.getFile();
+			//FileDialog dialog = new FileDialog(this,"open toDo List");
+			//dialog.setVisible(true);
+			JFileChooser fileChooser = new JFileChooser();
+			FileNameExtensionFilter filter = new FileNameExtensionFilter("XML files","xml");
+			fileChooser.setFileFilter(filter);
+			int returnVal = fileChooser.showOpenDialog(this);
+			if(returnVal == JFileChooser.CANCEL_OPTION)
+			{
+				return;
+			}
+			String file = fileChooser.getSelectedFile().getPath();
+			System.out.println(file);
+			//String file = dialog.getDirectory()+dialog.getFile();
 			try
 			{
 				this.mSource.open(file);
@@ -311,7 +321,10 @@ public class toDoList extends JFrame implements ActionListener,ItemListener
 	*/
 	public void itemStateChanged(ItemEvent e)
 	{
-		this.mCurIndex = (int)e.getItem();
+		//System.out.println(e.getItem().toString());
+		this.mCurIndex = (Integer)e.getItem();
+
+		//this.mCurIndex = (int)e.getItem();
 		//System.out.println(name.toString());
 		//String item = mToDos.getItem(index);
 		String listItem = this.mToDos.getItem(this.mCurIndex);
@@ -322,6 +335,7 @@ public class toDoList extends JFrame implements ActionListener,ItemListener
 		SimpleDateFormat dateParser = new SimpleDateFormat("dd.MM.yyyy HH:mm");
 		this.mCriticalDateLabel.setText("Critical Date:\n"+dateParser.format(data.getCriticalDate()));
 		this.mEndDateLabel.setText("End Date:\n"+dateParser.format(data.getEndDate()));
+
 	}
 
 	/*

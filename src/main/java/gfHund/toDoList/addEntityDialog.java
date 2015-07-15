@@ -63,10 +63,10 @@ class addEntityDialog extends JDialog implements ActionListener
 
   public void init(toDosSource source)
   {
-    setSize(500,500);
+    setSize(750,250);
     //BoxLayout
     GridLayout grid = new GridLayout(5,2);
-    grid.setHgap(10);
+    grid.setHgap(0);
     grid.setVgap(10);
     this.mSource = source;
     //this.mPanel = new JPanel();//
@@ -84,55 +84,29 @@ class addEntityDialog extends JDialog implements ActionListener
     this.mDescriptionTextArea = new JTextArea(3,30);
     this.mEndDateTextField = new JTextField(30);
     this.mCriticalDateTextField = new JTextField(30);
-    /*
-    this.mEndDateModel = new UtilDateModel();
-    Properties p = new Properties();
-    p.put("text.today","Today");
-    p.put("text.month","Month");
-    p.put("text.year","Year");
-    this.mEndDatePanel = new JDatePanelImpl(this.mEndDateModel,p);
-    this.mEndDatePicker = new JDatePickerImpl(this.mEndDatePanel,new DateLabelFormatter());
 
-    Properties p2 = new Properties();
-    p2.put("text.today","Today");
-    p2.put("text.month","Month");
-    p2.put("text.year","Year");
-    this.mCriticalDateModel = new UtilDateModel();
-    this.mCriticalDatePanel = new JDatePanelImpl(this.mCriticalDateModel,p2);
-    this.mCriticalDatePicker = new JDatePickerImpl(this.mCriticalDatePanel,new DateLabelFormatter());
-    */
     this.mOk.addActionListener(this);
     this.mCancel.addActionListener(this);
 
     add(mPanel);
+    
+    JPanel[] panels = new JPanel[10];
+    for(int i=0;i<panels.length;i++)
+    {
+      panels[i] = new JPanel();
+      mPanel.add(panels[i]);
+    }
+    panels[0].add(mNameLabel);
+    panels[1].add(mNameTextField);
+    panels[2].add(mDescriptionLabel);
+    panels[3].add(mDescriptionTextArea);
+    panels[4].add(mCriticalDateLabel);
+    panels[5].add(mCriticalDateTextField);
+    panels[6].add(mEndDateLabel);
+    panels[7].add(mEndDateTextField);
+    panels[8].add(mOk);
+    panels[9].add(mCancel);
 
-    mPanel.add(mNameLabel);
-    mPanel.add(mNameTextField);
-    mPanel.add(mDescriptionLabel);
-    mPanel.add(mDescriptionTextArea);
-    mPanel.add(mCriticalDateLabel);
-
-    mPanel.add(mCriticalDateTextField);
-    //mPanel.add(mCriticalDatePicker);
-
-    mPanel.add(mEndDateLabel);
-
-    mPanel.add(mEndDateTextField);
-    //mPanel.add(mEndDatePicker);
-    mPanel.add(mOk);
-    mPanel.add(mCancel);
-    /*
-    mNameLabel.setBounds(10,10,100,50);
-    mNameTextField.setBounds(220,10,200,50);
-    mDescriptionLabel.setBounds(10,70,100,50);
-    mDescriptionTextArea.setBounds(220,70,200,150);
-    mCriticalDateLabel.setBounds(10,230,100,50);
-    mCriticalDateTextField.setBounds(220,230,200,50);
-    mEndDateLabel.setBounds(10,290,100,50);
-    mEndDateTextField.setBounds(220,290,200,50);
-    mOk.setBounds(100,350,100,50);
-    mCancel.setBounds(300,350,100,50);
-    */
   }
 
   public toDoEntry getData()
