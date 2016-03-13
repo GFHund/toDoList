@@ -41,6 +41,7 @@ class toDosSource// implements ActionListener
 
 		this.mBuilder = documentBuilderFactory.newDocumentBuilder();
 	}
+        //-----------------------------------------------
 	// throws IOException,SAXException
 	/*
     creates a xml File
@@ -65,6 +66,7 @@ class toDosSource// implements ActionListener
 
 
 	}
+        //-----------------------------------------------
 	/*
 	checks if the xml file is open
 	*/
@@ -72,6 +74,7 @@ class toDosSource// implements ActionListener
 	{
 		return !this.mFile.isEmpty();
 	}
+        //-----------------------------------------------
 	/*
 	open a xml file
 	*/
@@ -97,6 +100,7 @@ class toDosSource// implements ActionListener
 		}
 
 	}
+        //-----------------------------------------------
 	/*
 	save a xml File
 	*/
@@ -106,6 +110,7 @@ class toDosSource// implements ActionListener
 		StreamResult result = new StreamResult(new File(this.mFile));
 		this.mTransformer.transform(source,result);
 	}
+        //-----------------------------------------------
 	/*
 	reads all datasets from xml File
 	*/
@@ -124,17 +129,30 @@ class toDosSource// implements ActionListener
 			strActive = children.item(0).getFirstChild().getNodeValue();
 			strName = children.item(1).getFirstChild().getNodeValue();
 			strDesc = children.item(2).getFirstChild().getNodeValue();
-			strEndDate = children.item(3).getFirstChild().getNodeValue();
-			strCriticalDate = children.item(4).getFirstChild().getNodeValue();
-			/*ToDo: strActive in true oder false unsetzen und EndDate sowie crititcalDate in Date umsetzen*/
-			if(strActive.charAt(0) == '1')
+			
+                        if(children.getLength() > 3) {
+                            strEndDate = children.item(3).getFirstChild().getNodeValue();
+                            strCriticalDate = children.item(4).getFirstChild().getNodeValue();
+                            
+                            endDate = dateFormat.parse(strEndDate);
+                            criticalDate = dateFormat.parse(strCriticalDate);
+                            if(strActive.charAt(0) == '1')
 				active = true;
-			else
-				active = false;
+                            else
+                                    active = false;
 
-			endDate = dateFormat.parse(strEndDate);
-			criticalDate = dateFormat.parse(strCriticalDate);
-			entries[i] = new toDoEntry(active,strName,strDesc,endDate,criticalDate);
+                            entries[i] = new toDoEntry(active,strName,strDesc,endDate,criticalDate);
+                        }
+                        else{
+                            if(strActive.charAt(0) == '1')
+				active = true;
+                            else
+                                active = false;
+                            entries[i] = new toDoEntry(active,strName,strDesc);
+                        }
+                        
+			/*ToDo: strActive in true oder false unsetzen und EndDate sowie crititcalDate in Date umsetzen*/
+			
 		}
 		return entries;
 		/*
@@ -153,6 +171,7 @@ class toDosSource// implements ActionListener
 		}
 		*/
 	}
+        //-----------------------------------------------
 	/*
 	creates a new dataset
 	*/
@@ -175,22 +194,27 @@ class toDosSource// implements ActionListener
 
 		Text nameText = this.mXmlDocument.createTextNode( data.getName() );
 		Text descText = this.mXmlDocument.createTextNode( data.getDesctiption() );
-		Text endDateText = this.mXmlDocument.createTextNode( dateParser.format( data.getEndDate() ) );
-		Text criticalDateText = this.mXmlDocument.createTextNode( dateParser.format( data.getCriticalDate() ) );
-
+		
 		this.mXmlDocument.getFirstChild().appendChild(dataNode);
 		//insert childs to <toDoEntity>
 		dataNode.appendChild(active);
 		dataNode.appendChild(name);
 		dataNode.appendChild(desc);
-		dataNode.appendChild(endDate);
-		dataNode.appendChild(criticalDate);
-
+                
 		active.appendChild(activeText);
 		name.appendChild(nameText);
 		desc.appendChild(descText);
-		endDate.appendChild(endDateText);
-		criticalDate.appendChild(criticalDateText);
+                
+                if(data.getEndDate() != null || data.getCriticalDate() != null)
+                {
+                    Text endDateText = this.mXmlDocument.createTextNode( dateParser.format( data.getEndDate() ) );
+                    Text criticalDateText = this.mXmlDocument.createTextNode( dateParser.format( data.getCriticalDate() ) );
+                    dataNode.appendChild(endDate);
+                    dataNode.appendChild(criticalDate);
+                    endDate.appendChild(endDateText);
+                    criticalDate.appendChild(criticalDateText);
+                }
+                
 
 		int id = data.getName().hashCode();
 
@@ -204,6 +228,7 @@ class toDosSource// implements ActionListener
 			logging.addLog("Error: "+e.getMessage());
 		}
 	}
+        //-----------------------------------------------
 	/*
 	delete an Entry from the toDoList.
 	Returns false if the entity could not deleted
@@ -231,6 +256,7 @@ class toDosSource// implements ActionListener
 		}
 		return true;
 	}
+        //-----------------------------------------------
 	/*
 	gets one Entry of the xml file, which id equals hash
 	*/
@@ -284,6 +310,7 @@ class toDosSource// implements ActionListener
 		System.out.println(temp.toString());
 	}
 	*/
+        //-----------------------------------------------
 	/*
 	gets the File Name of the opened XML File
 		*/
@@ -292,6 +319,7 @@ class toDosSource// implements ActionListener
 		File file = new File(this.mFile);
 		return file.getName();
 	}
+        //-----------------------------------------------
 	/*
   gets the whole file path
    */

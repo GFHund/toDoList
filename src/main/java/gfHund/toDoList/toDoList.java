@@ -1,5 +1,9 @@
 package gfHund.toDoList;
+
+//import gfHund.toDoList.components.*;
+
 import java.util.Date;
+import java.util.Vector;
 import java.text.ParseException;
 import javax.xml.transform.*;
 import java.awt.*;
@@ -12,6 +16,7 @@ import org.w3c.dom.*;
 import javax.xml.parsers.*;
 import org.xml.sax.*;
 import java.text.SimpleDateFormat;
+
 //import javax.swing.BoxLayout;
 
 
@@ -23,6 +28,9 @@ toDo:
 public class toDoList extends JFrame implements ActionListener,ItemListener
 {
 	private List mToDos;
+	//private toDoView mCustomToDo;
+	private JList<toDoEntry> mCustomToDo;
+	private Vector<toDoEntry> mToDoEntries;
 	private JPanel mAppPanel;
 	private JPanel mDetailsPanel;
 	private JLabel mNameLabel = new JLabel("Name:\n");
@@ -48,12 +56,17 @@ public class toDoList extends JFrame implements ActionListener,ItemListener
 	private int mCurIndex;
 
 	private boolean mEnableNetwork;
+	private boolean mEnableCustomListView;
 	/*
 	Constructor of toDoList
 	*/
 	public toDoList()
 	{
 		super("toDo List");
+
+		this.mEnableNetwork = false;
+		this.mEnableCustomListView = true;
+
 		setSize(400,500);
 		try
 		{
@@ -81,15 +94,32 @@ public class toDoList extends JFrame implements ActionListener,ItemListener
 		this.mAppPanel.setLayout(new BoxLayout(this.mAppPanel,BoxLayout.X_AXIS));
 		this.mDetailsPanel = new JPanel();
 		this.mDetailsPanel.setLayout(new BoxLayout(this.mDetailsPanel,BoxLayout.Y_AXIS));
-		this.mToDos = new List();
-		this.mEnableNetwork = false;
+		if(this.mEnableCustomListView)
+		{
+			//this.mCustomToDo = new toDoView();
+			this.mToDoEntries = new Vector<toDoEntry>();
+			this.mCustomToDo = new JList<toDoEntry>(mToDoEntries);
+			//this.mCustomToDo.setCellRenderer(new toDoListRenderer());
+		}
+		else
+		{
+			this.mToDos = new List();
+		}
+
+
 		for(int i=0;i<3;i++)
 		{
 			this.mSeparator[i] = new JSeparator();
 		}
 		//private JSeperator mSeperator[3];
-
-		this.mAppPanel.add(this.mToDos);
+		if(this.mEnableCustomListView)
+		{
+			this.mAppPanel.add(this.mCustomToDo);
+		}
+		else
+		{
+			this.mAppPanel.add(this.mToDos);
+		}
 		this.mAppPanel.add(this.mDetailsPanel);
 
 		this.mDetailsPanel.add(this.mNameLabel);
@@ -147,8 +177,14 @@ public class toDoList extends JFrame implements ActionListener,ItemListener
 			this.mServer.addActionListener(this);
 
 		//this.mToDos.addActionListener(mSource);
-		this.mToDos.addItemListener(this);
-
+		if(!this.mEnableCustomListView)
+		{
+			this.mToDos.addItemListener(this);
+		}
+		else
+		{
+                    //aaaa
+		}
 		setJMenuBar(mMenuBar);
 		add(this.mAppPanel);
 
@@ -162,6 +198,7 @@ public class toDoList extends JFrame implements ActionListener,ItemListener
 	/*
 	call if any menu item is clicked
 	*/
+	@Override
 	public void actionPerformed(ActionEvent event)
 	{
 		JMenuItem item = (JMenuItem)event.getSource();
@@ -191,8 +228,9 @@ public class toDoList extends JFrame implements ActionListener,ItemListener
 			//FileDialog dialog = new FileDialog(this,"open toDo List");
 			//dialog.setVisible(true);
 			JFileChooser fileChooser = new JFileChooser();
-			FileNameExtensionFilter filter = new FileNameExtensionFilter("XML files","xml");
-			fileChooser.setFileFilter(filter);
+			//FileNameExtensionFilter filter = new FileNameExtensionFilter("XML files","xml");
+			//fileChooser.setFileFilter(filter);
+			fileChooser.setCurrentDirectory(new File("./"));
 			int returnVal = fileChooser.showOpenDialog(this);
 			if(returnVal == JFileChooser.CANCEL_OPTION)
 			{
@@ -220,7 +258,15 @@ public class toDoList extends JFrame implements ActionListener,ItemListener
 				toDoEntry[] entries = this.mSource.getAllEntries();
 				for(int i=0;i<entries.length;i++)
 				{
-					this.mToDos.add(entries[i].getName());
+					if(!this.mEnableCustomListView)
+					{
+						this.mToDos.add(entries[i].getName());
+					}
+					else
+					{
+						//this.mCustomToDo.add(entries[i]);
+						this.mToDoEntries.add(entries[i]);
+					}
 				}
 			}
 			catch(ParseException e)
@@ -275,7 +321,16 @@ public class toDoList extends JFrame implements ActionListener,ItemListener
 			//System.out.println("delete");
 			if(mCurIndex != -1)
 			{
-				String listItem = this.mToDos.getItem(this.mCurIndex);
+				String listItem;
+				if(!this.mEnableCustomListView)
+				{
+					listItem = this.mToDos.getItem(this.mCurIndex);
+				}
+				else
+				{
+					//listItem = this.mCustomToDo.getItem(this.mCurIndex).getName();
+					listItem = this.mToDoEntries.get(this.mCurIndex).getName();
+				}
 				int hash = listItem.hashCode();
 				boolean success = this.mSource.deleteEntry(hash);
 				if(!success)
@@ -285,9 +340,16 @@ public class toDoList extends JFrame implements ActionListener,ItemListener
 				}
 				else
 				{
-					this.mToDos.remove(this.mCurIndex);
+					if(!this.mEnableCustomListView)
+					{
+						this.mToDos.remove(this.mCurIndex);
+					}
+					else
+					{
+						//this.mCustomToDo.remove(this.mCurIndex);
+						this.mToDoEntries.remove(this.mCurIndex);
+					}
 				}
-
 			}
 			else
 			{
@@ -319,6 +381,7 @@ public class toDoList extends JFrame implements ActionListener,ItemListener
 	called if the market item of the list is changed.
 	It shows all Informations on the right side
 	*/
+	@Override
 	public void itemStateChanged(ItemEvent e)
 	{
 		//System.out.println(e.getItem().toString());
@@ -327,7 +390,16 @@ public class toDoList extends JFrame implements ActionListener,ItemListener
 		//this.mCurIndex = (int)e.getItem();
 		//System.out.println(name.toString());
 		//String item = mToDos.getItem(index);
-		String listItem = this.mToDos.getItem(this.mCurIndex);
+		String listItem;
+		if(!this.mEnableCustomListView)
+		{
+			listItem = this.mToDos.getItem(this.mCurIndex);
+		}
+		else
+		{
+			//listItem = this.mCustomToDo.getItem(this.mCurIndex).getName();
+			listItem = this.mToDoEntries.get(this.mCurIndex).getName();
+		}
 		int hash = listItem.hashCode();
 		toDoEntry data =  this.mSource.getEntry(hash);
 		this.mNameLabel.setText("Name:\n"+data.getName());
@@ -359,10 +431,27 @@ public class toDoList extends JFrame implements ActionListener,ItemListener
 					}
 				}
 			}
-			this.mToDos.removeAll();
+			if(!this.mEnableCustomListView)
+			{
+				this.mToDos.removeAll();
+			}
+			else
+			{
+				//this.mCustomToDo.removeAll();
+				this.mToDoEntries.removeAllElements();
+			}
+
 			for(int i=0;i<entries.length;i++)
 			{
-				this.mToDos.add( entries[i].getName() );
+				if(!this.mEnableCustomListView)
+				{
+					this.mToDos.add( entries[i].getName() );
+				}
+				else
+				{
+					//this.mCustomToDo.add( entries[i]);
+					this.mToDoEntries.add(entries[i]);
+				}
 			}
 		}
 		catch(ParseException e)
@@ -375,8 +464,10 @@ public class toDoList extends JFrame implements ActionListener,ItemListener
 	/*
 	main
 	*/
+        /*
 	public static void main(String[] args)
 	{
 		new toDoList();
 	}
+        */
 }

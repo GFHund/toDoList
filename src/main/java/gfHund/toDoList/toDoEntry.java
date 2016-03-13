@@ -2,7 +2,7 @@ package gfHund.toDoList;
 import java.util.*;
 
 
-class toDoEntry
+public class toDoEntry
 {
 	private boolean mActive;
 	private String mName;
@@ -17,6 +17,15 @@ class toDoEntry
 		this.mDescription = description;
 		this.mEndDate = endDate;
 		this.mCriticalDate = criticalDate;
+	}
+
+	public toDoEntry(boolean active,String name,String description)
+	{
+		this.mActive = active;
+		this.mName = name;
+		this.mDescription = description;
+		this.mEndDate = null;
+		this.mCriticalDate = null;
 	}
 
 	public void setActive(boolean active)
@@ -60,5 +69,9 @@ class toDoEntry
 	public Date getCriticalDate()
 	{
 		return this.mCriticalDate;
+	}
+
+	public String toString(){
+		return this.mName;
 	}
 }
